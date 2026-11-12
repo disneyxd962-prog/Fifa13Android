@@ -3,7 +3,10 @@ package com.fifa13android
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.app.ActivityManager
+import android.content.pm.PackageManager
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -13,10 +16,12 @@ import android.widget.Spinner
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.documentfile.provider.DocumentFile
 
 class MainActivity : Activity() {
     private val prefs by lazy { getSharedPreferences("fifa13_settings", MODE_PRIVATE) }
     private lateinit var folderStatus: TextView
+    private lateinit var scanStatus: TextView
     private val folderPicker = 13013
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +76,7 @@ class MainActivity : Activity() {
         }
 
         heading("FIFA 13 Android")
-        note("Contenedor Android experimental · versión 0.1.0")
+        note("Contenedor Android experimental · versión 0.2.0")
         heading("Instalación del juego")
         folderStatus = TextView(this).apply {
             text = "Carpeta del juego: no seleccionada"
@@ -83,16 +88,26 @@ class MainActivity : Activity() {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, folderPicker)
         }
-        note("Selecciona la carpeta donde está fifa13.exe. La app solo guarda el permiso de acceso; no copia ni incluye los archivos del juego.")
+        note("Selecciona la carpeta que contiene fifa13.exe. La app busca dentro de la carpeta elegida y sus subcarpetas; no copia ni incluye archivos del juego.")
+        actionButton("Detectar FIFA 13") { scanForGame() }
+        scanStatus = TextView(this).apply {
+            text = "Estado: todavía no se ha comprobado la carpeta."
+            setTextColor(0xFFB8D7FF.toInt())
+            textSize = 14f
+        }
+        root.addView(scanStatus)
+
+        heading("Compatibilidad del dispositivo")
+        note(deviceCompatibilitySummary())
 
         heading("Gráficos")
         setting("Resolución objetivo", listOf("Automática", "1920 × 1080", "1600 × 900", "1280 × 720", "960 × 540"), "resolution", "Automática")
         setting("Calidad", listOf("Baja", "Media", "Alta"), "quality", "Baja")
         setting("Límite de FPS", listOf("Automático", "30", "45", "60"), "fps", "30")
-        note("Estos valores se guardan como preferencias. Todavía no modifican el renderizado del juego.")
+        note("Estos valores se guardan como preferencias. Aún no cambian el renderizado porque el motor de compatibilidad no está integrado.")
 
         heading("Controles táctiles · diseño preliminar")
-        note("Distribución de botones de mando. Aún no envía entradas al juego.")
+        note("Distribución visual inspirada en un mando Xbox. Todavía no envía entradas al juego.")
         val pad = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
@@ -110,15 +125,57 @@ class MainActivity : Activity() {
 
         heading("Estado del motor")
         note("Wine/Hangover: pendiente de integración\nTraducción x86 → ARM64: pendiente\nDirect3D 9: pendiente\nEl juego todavía no se puede ejecutar desde esta versión.")
-        actionButton("Comprobar archivos de la carpeta") {
-            val uri = prefs.getString("game_folder", null)?.let(Uri::parse)
-            if (uri == null) {
-                Toast.makeText(this, "Primero selecciona la carpeta del juego", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Carpeta guardada. La validación completa está pendiente.", Toast.LENGTH_LONG).show()
+        setContentView(scroll)
+    }
+
+    private fun deviceCompatibilitySummary(): String {
+        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val glVersion = manager.deviceConfigurationInfo?.glEsVersion ?: "desconocido"
+        val abis = Build.SUPPORTED_ABIS.joinToString()
+        val vulkan = if (Build.VERSION.SDK_INT >= 24 &&
+            packageManager.hasSystemFeature(PackageManager.FEATURE_VULKAN_HARDWARE_LEVEL)) "sí" else "no detectado"
+        return "Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})\n" +
+            "Arquitecturas: $abis\nOpenGL ES: $glVersion\nVulkan: $vulkan\n" +
+            "Nota: detectar Vulkan/OpenGL no garantiza que Direct3D 9 o FIFA 13 sean compatibles."
+    }
+
+    private fun scanForGame() {
+        val rawUri = prefs.getString("game_folder", null)
+        if (rawUri == null) {
+            Toast.makeText(this, "Primero selecciona la carpeta del juego", Toast.LENGTH_SHORT).show()
+            return
+        }
+        scanStatus.text = "Buscando fifa13.exe…"
+        Thread {
+            val root = DocumentFile.fromTreeUri(this, Uri.parse(rawUri))
+            val result = if (root == null || !root.isDirectory) null else findGameExecutable(root, 0, intArrayOf(0))
+            runOnUiThread {
+                if (result != null) {
+                    scanStatus.text = "FIFA 13 detectado: ${result.name}\nUbicación: ${result.uri}\nEsto confirma que existe el ejecutable, no que el juego ya pueda arrancar."
+                    Toast.makeText(this, "Se ha encontrado fifa13.exe", Toast.LENGTH_LONG).show()
+                } else {
+                    scanStatus.text = "No se encontró fifa13.exe en la carpeta seleccionada. Selecciona la carpeta principal correcta."
+                    Toast.makeText(this, "No se encontró fifa13.exe", Toast.LENGTH_LONG).show()
+                }
+            }
+        }.start()
+    }
+
+    private fun findGameExecutable(folder: DocumentFile, depth: Int, visited: IntArray): DocumentFile? {
+        if (depth > 8 || visited[0] >= 3000) return null
+        val children = try { folder.listFiles() } catch (_: Exception) { return null }
+        for (child in children) {
+            visited[0]++
+            if (visited[0] >= 3000) return null
+            if (child.isFile && child.name.equals("fifa13.exe", ignoreCase = true)) return child
+        }
+        for (child in children) {
+            if (child.isDirectory) {
+                val found = findGameExecutable(child, depth + 1, visited)
+                if (found != null) return found
             }
         }
-        setContentView(scroll)
+        return null
     }
 
     @Deprecated("Deprecated by Android, kept for broad device compatibility")
@@ -130,6 +187,7 @@ class MainActivity : Activity() {
             contentResolver.takePersistableUriPermission(uri, flags)
             prefs.edit().putString("game_folder", uri.toString()).apply()
             folderStatus.text = "Carpeta del juego: seleccionada"
+            scanStatus.text = "Carpeta guardada. Pulsa «Detectar FIFA 13» para buscar el ejecutable."
             Toast.makeText(this, "Carpeta guardada", Toast.LENGTH_SHORT).show()
         }
     }

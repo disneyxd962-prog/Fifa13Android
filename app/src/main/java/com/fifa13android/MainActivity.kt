@@ -145,7 +145,16 @@ class MainActivity : Activity() {
 
     private fun openWinlator() {
         val intent = packageManager.getLaunchIntentForPackage("com.winlator")
-        if (intent == null) {\n            Toast.makeText(this, "Winlator no está instalado. Instala una versión compatible y vuelve aquí.", Toast.LENGTH_LONG).show()\n            return\n        }\n        try {\n            startActivity(intent)\n        } catch (_: Exception) {\n            Toast.makeText(this, "No se pudo abrir Winlator.", Toast.LENGTH_LONG).show()\n        }\n    }
+        if (intent == null) {
+            Toast.makeText(this, "Winlator no está instalado. Instala una versión compatible y vuelve aquí.", Toast.LENGTH_LONG).show()
+            return
+        }
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            Toast.makeText(this, "No se pudo abrir Winlator.", Toast.LENGTH_LONG).show()
+        }
+    }
 
     private fun deviceCompatibilitySummary(): String {
         val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager

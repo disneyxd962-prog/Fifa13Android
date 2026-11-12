@@ -23,6 +23,8 @@ class MainActivity : Activity() {
     private lateinit var folderStatus: TextView
     private lateinit var scanStatus: TextView
     private val folderPicker = 13013
+    private val runtimePicker = 13014
+    private lateinit var runtimeStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,6 +125,22 @@ class MainActivity : Activity() {
         }
         root.addView(pad)
 
+        heading("Importar componentes de Winlator")
+        note("Selecciona el APK de Winlator que has proporcionado. La app copiará los paquetes Wine/Box64/Direct3D que encuentre a su almacenamiento privado. Esto prepara los archivos, pero no instala ni ejecuta todavía el motor.")
+        actionButton("Importar paquetes desde APK de Winlator") {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/vnd.android.package-archive"
+            }
+            startActivityForResult(intent, runtimePicker)
+        }
+        runtimeStatus = TextView(this).apply {
+            text = "Paquetes de Winlator: todavía no importados."
+            setTextColor(0xFFB8D7FF.toInt())
+            textSize = 14f
+        }
+        root.addView(runtimeStatus)
+
         heading("Diagnóstico del runtime")
         val runtime = RuntimeProbe.inspect(this)
         note(runtime.summary())
@@ -204,6 +222,23 @@ class MainActivity : Activity() {
             folderStatus.text = "Carpeta del juego: seleccionada"
             scanStatus.text = "Carpeta guardada. Pulsa «Detectar FIFA 13» para buscar el ejecutable."
             Toast.makeText(this, "Carpeta guardada", Toast.LENGTH_SHORT).show()
+        } else if (requestCode == runtimePicker && resultCode == RESULT_OK) {
+            val uri = data?.data ?: return
+            runtimeStatus.text = "Importando paquetes…"
+            Thread {
+                try {
+                    val result = WinlatorPackageImporter.import(this, uri)
+                    runOnUiThread {
+                        runtimeStatus.text = "Paquetes copiados: ${result.files.size}\nSHA-256 rootfs: ${result.rootfsSha256}\n${result.message}"
+                        Toast.makeText(this, "Paquetes importados; falta instalar y validar el motor.", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        runtimeStatus.text = "Error al importar: ${e.message ?: "archivo no válido"}"
+                        Toast.makeText(this, "No se pudo importar el APK de Winlator", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }.start()
         }
     }
 }

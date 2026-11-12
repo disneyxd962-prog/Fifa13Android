@@ -132,7 +132,9 @@ class MainActivity : Activity() {
             "No se puede iniciar FIFA 13 todavía: falta instalar un runtime Wine/Hangover compatible en el almacenamiento privado de la app."
         })
         actionButton("ABRIR WINLATOR") { openWinlator() }
-        note("Puente externo experimental: abre Winlator si está instalado. La creación del contenedor y la selección de fifa13.exe se hacen dentro de Winlator; esta app todavía no puede enviarle el juego automáticamente.")\n\n        val playButton = Button(this).apply {
+        note("Puente externo experimental: abre Winlator si está instalado. La creación del contenedor y la selección de fifa13.exe se hacen dentro de Winlator; esta app todavía no puede enviarle el juego automáticamente.")
+
+        val playButton = Button(this).apply {
             text = "JUGAR A FIFA 13"
             isEnabled = false
         }
@@ -142,7 +144,8 @@ class MainActivity : Activity() {
     }
 
     private fun openWinlator() {
-        val intent = packageManager.getLaunchIntentForPackage("com.winlator")\n        if (intent == null) {\n            Toast.makeText(this, "Winlator no está instalado. Instala una versión compatible y vuelve aquí.", Toast.LENGTH_LONG).show()\n            return\n        }\n        try {\n            startActivity(intent)\n        } catch (_: Exception) {\n            Toast.makeText(this, "No se pudo abrir Winlator.", Toast.LENGTH_LONG).show()\n        }\n    }
+        val intent = packageManager.getLaunchIntentForPackage("com.winlator")
+        if (intent == null) {\n            Toast.makeText(this, "Winlator no está instalado. Instala una versión compatible y vuelve aquí.", Toast.LENGTH_LONG).show()\n            return\n        }\n        try {\n            startActivity(intent)\n        } catch (_: Exception) {\n            Toast.makeText(this, "No se pudo abrir Winlator.", Toast.LENGTH_LONG).show()\n        }\n    }
 
     private fun deviceCompatibilitySummary(): String {
         val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager

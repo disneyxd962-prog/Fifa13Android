@@ -11,13 +11,14 @@ Fuentes revisadas:
 - https://github.com/winebox64/winlator-wb64/blob/main/app/build.gradle
 - https://github.com/winebox64/winlator-wb64/blob/main/app/src/main/AndroidManifest.xml
 - https://github.com/winebox64/winlator-wb64/blob/main/app/src/main/cpp/CMakeLists.txt
+- https://github.com/winebox64/winlator-wb64/blob/main/app/src/main/java/com/winlator/xenvironment/ImageFsInstaller.java
 
 ## Qué implica para FIFA 13
 
-El README de WB64 describe el proyecto como entorno para aplicaciones Windows x86_64 con Wine y Box86/Box64. FIFA 13 PC es una aplicación Windows x86 de 32 bits. La documentación consultada no demuestra que esta variante concreta pueda ejecutar ese juego en el Galaxy A52 5G.
+El README de WB64 describe el proyecto como entorno para aplicaciones Windows x86_64 con Wine y Box86/Box64. FIFA 13 PC es una aplicación Windows x86 de 32 bits. En el código de `ImageFsInstaller` también aparecen directorios Wine `x86_64-windows` e `i386-windows`, lo que indica que el sistema de archivos contempla componentes de ambas arquitecturas. Sin embargo, eso por sí solo no demuestra que el camino completo de ejecución de programas Windows x86 de 32 bits esté habilitado y funcione en esta variante, ni que FIFA 13 arranque.
 
 Por eso no se debe conectar el botón JUGAR ni afirmar que el runtime está integrado hasta validar:
-1. Una ruta real de ejecución de Windows x86 de 32 bits en ARM64.
+1. Confirmar cómo se conecta la presencia de Wine `i386-windows` con el traductor x86 y probar una aplicación Windows x86 de 32 bits real en ARM64.
 2. Wine y sus componentes nativos en Android.
 3. Direct3D 9 y el controlador gráfico del dispositivo.
 4. Audio, entrada táctil, ventana y almacenamiento.
@@ -25,7 +26,7 @@ Por eso no se debe conectar el botón JUGAR ni afirmar que el runtime está inte
 
 ## Por qué no se ha copiado el proyecto WB64 dentro de esta app
 
-Copiar su carpeta `app` o añadirla como dependencia no produce un APK único: hay que fusionar manifiestos y recursos, adaptar el ciclo de vida de las actividades, integrar CMake y las bibliotecas nativas, preparar los componentes del entorno Linux y revisar las licencias de cada componente. Además, la variante WB64 revisada no demuestra por sí sola el requisito x86 de 32 bits.
+Copiar su carpeta `app` o añadirla como dependencia no produce un APK único: hay que fusionar manifiestos y recursos, adaptar el ciclo de vida de las actividades, integrar CMake y las bibliotecas nativas, preparar los componentes del entorno Linux y revisar las licencias de cada componente. Además, aunque el instalador WB64 contiene componentes Wine `i386-windows`, todavía falta demostrar la ruta completa de ejecución x86 de 32 bits.
 
 Una integración incompleta podría generar un APK que instala pero falla al iniciar el juego. Se mantiene el puente externo como opción de prueba, claramente separado del runtime integrado.
 

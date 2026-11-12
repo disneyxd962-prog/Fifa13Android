@@ -16,6 +16,7 @@ import android.widget.Spinner
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import java.io.File
 import androidx.documentfile.provider.DocumentFile
 
 class MainActivity : Activity() {
@@ -140,6 +141,10 @@ class MainActivity : Activity() {
             textSize = 14f
         }
         root.addView(runtimeStatus)
+        val importedManifest = File(filesDir, "compat-runtime/import-manifest.txt")
+        if (importedManifest.isFile) {
+            runtimeStatus.text = "Paquetes de Winlator importados en este dispositivo. Se conservan en el almacenamiento privado. Aún falta instalar y arrancar Wine/Box64."
+        }
 
         heading("Diagnóstico del runtime")
         val runtime = RuntimeProbe.inspect(this)

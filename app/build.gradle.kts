@@ -24,3 +24,7 @@ android {
         jvmTarget = "17"
     }
 }
+
+dependencies {
+    implementation("androidx.documentfile:documentfile:1.0.1")
+}

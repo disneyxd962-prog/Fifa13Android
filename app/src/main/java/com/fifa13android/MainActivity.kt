@@ -101,10 +101,10 @@ class MainActivity : Activity() {
         note(deviceCompatibilitySummary())
 
         heading("Gráficos")
-        setting("Resolución objetivo", listOf("Automática", "1920 × 1080", "1600 × 900", "1280 × 720", "960 × 540"), "resolution", "Automática")
+        setting("Resolución objetivo", listOf("Automática", "1920 × 1080", "1600 × 900", "1280 × 720", "960 × 540"), "resolution", "960 × 540")
         setting("Calidad", listOf("Baja", "Media", "Alta"), "quality", "Baja")
         setting("Límite de FPS", listOf("Automático", "30", "45", "60"), "fps", "30")
-        note("Estos valores se guardan como preferencias. Aún no cambian el renderizado porque el motor de compatibilidad no está integrado.")
+        note("Perfil inicial para el Galaxy A52 5G con 6 GB: 960 × 540, calidad baja y límite de 30 FPS. Son preferencias guardadas; todavía no modifican el renderizado porque falta integrar el motor de compatibilidad. Android administra la memoria y la app no reserva 2,5 GB de forma fija.")
 
         heading("Controles táctiles · diseño preliminar")
         note("Distribución visual inspirada en un mando Xbox. Todavía no envía entradas al juego.")
@@ -143,7 +143,7 @@ class MainActivity : Activity() {
     private fun deviceCompatibilitySummary(): String {
         val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         val glVersion = manager.deviceConfigurationInfo?.glEsVersion ?: "desconocido"
-        val abis = Build.SUPPORTED_ABIS.joinToString()
+        val abis = Build.SUPPORTED_ABIS.joinToString()\n        val memoryClassMb = (getSystemService(ACTIVITY_SERVICE) as ActivityManager).memoryClass
         val vulkan = if (Build.VERSION.SDK_INT >= 24 &&
             packageManager.hasSystemFeature(PackageManager.FEATURE_VULKAN_HARDWARE_LEVEL)) "sí" else "no detectado"
         return "Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})\n" +

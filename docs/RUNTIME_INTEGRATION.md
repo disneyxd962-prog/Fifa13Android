@@ -44,3 +44,15 @@ Probar el arranque, menú, partido, audio, controles y estabilidad. Registrar er
 ## Criterio para habilitar «JUGAR A FIFA 13»
 
 El botón debe permanecer desactivado hasta que estén presentes el runtime y sus manifiestos, el proceso Wine pueda iniciarse, la ruta gráfica funcione y una prueba real valide la ejecución de una aplicación Windows de 32 bits. La detección de `fifa13.exe` por sí sola nunca será suficiente.
+
+
+## Puente provisional con Winlator instalado por separado
+
+La app ahora detecta si está instalado el paquete Android `com.winlator` y ofrece el botón **ABRIR WINLATOR**. Esto es una integración de lanzamiento externo, no una integración embebida del motor.
+
+- Winlator debe instalarse y preparar su contenedor por separado.
+- El usuario debe seleccionar dentro de Winlator la carpeta/copia legítima del juego y configurar el contenedor.
+- La app FIFA 13 Android no puede crear el contenedor ni lanzar `fifa13.exe` automáticamente todavía.
+- El botón **JUGAR A FIFA 13** sigue desactivado deliberadamente.
+
+El identificador `com.winlator` está comprobado en el proyecto Android de Winlator. Su README describe la combinación Wine + Box86/Box64 y advierte que el rendimiento y compatibilidad dependen del dispositivo. No se copian ni redistribuyen binarios de Wine, Box86/Box64, Mesa o DirectX dentro de este repositorio.

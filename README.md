@@ -11,11 +11,11 @@ Esta versión incluye:
 - Detección informativa de versión de Android, ABI, OpenGL ES y disponibilidad de la característica Vulkan.
 - Preferencias de resolución, calidad y FPS.
 - Diseño preliminar de controles táctiles.
-- Flujo de GitHub Actions para compilar un APK de depuración.
+- Flujo de GitHub Actions para compilar un APK de depuración.\n- Puente opcional para abrir Winlator si ya está instalado en el dispositivo.\n- Perfil inicial documentado para Samsung Galaxy A52 5G con 6 GB.
 
-**Limitación importante:** detectar el ejecutable o las capacidades gráficas del móvil no significa que FIFA 13 ya funcione. Esta versión todavía NO incluye Wine/Hangover, traducción x86 de 32 bits a ARM64, Direct3D 9 ni controles conectados al juego. Los ajustes gráficos aún se guardan como preferencias y no cambian el renderizado.
+**Limitación importante:** el puente abre Winlator como aplicación separada; NO integra su motor dentro de nuestro APK ni inicia FIFA 13 automáticamente. Esta versión todavía NO incluye Wine/Hangover, traducción x86 de 32 bits a ARM64, Direct3D 9 ni controles conectados al juego. Los ajustes gráficos aún se guardan como preferencias y no cambian el renderizado. El botón «JUGAR A FIFA 13» permanece desactivado hasta validar una ruta de ejecución real.
 
-## Arquitectura prevista
+## Estado de compatibilidad A52 5G\n\nConsulta [docs/A52_5G_COMPATIBILITY.md](docs/A52_5G_COMPATIBILITY.md) para el perfil inicial y el bloqueo pendiente de ejecutar aplicaciones Windows x86 de 32 bits.\n\n## Arquitectura prevista
 
 El objetivo inicial es Android ARM64. La compatibilidad real requerirá seleccionar y validar un runtime Wine/Hangover adecuado para Android, una solución de ejecución x86 de 32 bits sobre ARM64 y una ruta gráfica Direct3D 9 compatible con los controladores del dispositivo. No se da por compatible ninguna combinación hasta compilarla y probarla en móviles reales.
 

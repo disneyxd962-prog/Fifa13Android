@@ -1,27 +1,33 @@
 # FIFA13Android
 
-Proyecto Android para preparar una aplicación contenedora de compatibilidad para ejecutar una instalación legítima de FIFA 13 PC en dispositivos Android ARM64.
+Proyecto Android experimental para preparar una aplicación contenedora de compatibilidad para una instalación legítima de FIFA 13 PC en dispositivos Android.
 
-## Estado actual
+## Estado actual (0.2.0)
 
-Esta primera base incluye:
+Esta versión incluye:
 - Aplicación Android nativa en Kotlin.
-- Selector de carpeta para localizar una instalación del juego.
-- Panel inicial de ajustes de resolución, calidad y FPS objetivo.
-- Controles táctiles de estilo mando para la futura capa de entrada.
+- Selector de carpeta mediante el selector de documentos de Android.
+- Búsqueda real de `fifa13.exe` en la carpeta seleccionada y subcarpetas (búsqueda limitada en profundidad y número de elementos).
+- Detección informativa de versión de Android, ABI, OpenGL ES y disponibilidad de la característica Vulkan.
+- Preferencias de resolución, calidad y FPS.
+- Diseño preliminar de controles táctiles.
 - Flujo de GitHub Actions para compilar un APK de depuración.
 
-**Importante:** esta versión es una base de interfaz y configuración. Todavía no incluye Wine/Hangover, traducción x86 a ARM64 ni traducción Direct3D 9 funcional, por lo que aún no ejecuta FIFA 13. Esos componentes requieren integración y pruebas específicas en Android; no basta con añadir sus nombres o archivos al APK.
+**Limitación importante:** detectar el ejecutable o las capacidades gráficas del móvil no significa que FIFA 13 ya funcione. Esta versión todavía NO incluye Wine/Hangover, traducción x86 de 32 bits a ARM64, Direct3D 9 ni controles conectados al juego. Los ajustes gráficos aún se guardan como preferencias y no cambian el renderizado.
 
-## Requisitos
+## Arquitectura prevista
 
-- Android Studio reciente y JDK 17 para compilar localmente.
-- Android ARM64 para las futuras pruebas de compatibilidad.
-- Una copia legítima de FIFA 13 PC. Los archivos del juego no se incluyen en este repositorio.
+El objetivo inicial es Android ARM64. La compatibilidad real requerirá seleccionar y validar un runtime Wine/Hangover adecuado para Android, una solución de ejecución x86 de 32 bits sobre ARM64 y una ruta gráfica Direct3D 9 compatible con los controladores del dispositivo. No se da por compatible ninguna combinación hasta compilarla y probarla en móviles reales.
+
+## Requisitos para compilar
+
+- Android Studio reciente y JDK 17.
+- Gradle 8.9 (configurado en GitHub Actions).
+- Una copia legítima de FIFA 13 PC. Los archivos del juego no se incluyen en este repositorio ni en el APK.
 
 ## Compilar localmente
 
-Abre el repositorio en Android Studio y espera a que Gradle sincronice. También puedes compilar con Gradle 8.13 y JDK 17:
+Abre el repositorio en Android Studio y espera a que Gradle sincronice. También puedes compilar con Gradle 8.9 y JDK 17:
 
 ```bash
 gradle assembleDebug
@@ -35,11 +41,12 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ## Compilación en GitHub
 
-Cada push a `main` ejecuta el flujo de GitHub Actions. El APK se publica como artefacto descargable de la ejecución.
+Cada push a `main` ejecuta GitHub Actions. El APK se publica como artefacto descargable de la ejecución.
 
 ## Próximas etapas
 
-1. Probar selector y detección de archivos sin modificar la instalación.
-2. Conectar los controles táctiles a una capa de entrada Android.
-3. Diseñar la integración ARM64/x86 y Direct3D 9.
-4. Probar compatibilidad y rendimiento en dispositivos reales.
+1. Confirmar la detección de la instalación con una carpeta real del usuario.
+2. Diseñar y probar la capa de entrada táctil.
+3. Evaluar runtimes y traductores ARM64/x86 con soporte Android real.
+4. Integrar y validar una ruta Direct3D 9.
+5. Probar estabilidad y rendimiento en distintos dispositivos.

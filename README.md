@@ -11,11 +11,17 @@ Esta versión incluye:
 - Detección informativa de versión de Android, ABI, OpenGL ES y disponibilidad de la característica Vulkan.
 - Preferencias de resolución, calidad y FPS.
 - Diseño preliminar de controles táctiles.
-- Flujo de GitHub Actions para compilar un APK de depuración.\n- Puente opcional para abrir Winlator si ya está instalado en el dispositivo.\n- Perfil inicial documentado para Samsung Galaxy A52 5G con 6 GB.
+- Flujo de GitHub Actions para compilar un APK de depuración.
+- Puente opcional para abrir Winlator si ya está instalado en el dispositivo.
+- Perfil inicial documentado para Samsung Galaxy A52 5G con 6 GB.
 
-**Limitación importante:** el puente abre Winlator como aplicación separada; NO integra su motor dentro de nuestro APK ni inicia FIFA 13 automáticamente. Esta versión todavía NO incluye Wine/Hangover, traducción x86 de 32 bits a ARM64, Direct3D 9 ni controles conectados al juego. Los ajustes gráficos aún se guardan como preferencias y no cambian el renderizado. El botón «JUGAR A FIFA 13» permanece desactivado hasta validar una ruta de ejecución real.
+**Limitación importante:** el puente abre Winlator como aplicación separada; NO integra su motor dentro de nuestro APK ni inicia FIFA 13 automáticamente. Esta versión todavía NO integra Wine/Box86/Box64 ni Direct3D 9 dentro de nuestro APK, y los controles táctiles aún no envían entradas al juego. La auditoría de WB64 detectó componentes Wine `i386-windows`, pero todavía falta validar la ruta completa para ejecutar una aplicación Windows x86 de 32 bits. Los ajustes gráficos aún se guardan como preferencias y no cambian el renderizado. El botón «JUGAR A FIFA 13» permanece desactivado hasta validar una ruta de ejecución real.
 
-## Estado de compatibilidad A52 5G\n\nConsulta [docs/A52_5G_COMPATIBILITY.md](docs/A52_5G_COMPATIBILITY.md) para el perfil inicial y el bloqueo pendiente de ejecutar aplicaciones Windows x86 de 32 bits.\n\n## Arquitectura prevista
+## Estado de compatibilidad A52 5G
+
+Consulta [docs/A52_5G_COMPATIBILITY.md](docs/A52_5G_COMPATIBILITY.md) para el perfil inicial y el bloqueo pendiente de ejecutar aplicaciones Windows x86 de 32 bits.
+
+## Arquitectura prevista
 
 El objetivo inicial es Android ARM64. La compatibilidad real requerirá seleccionar y validar un runtime Wine/Hangover adecuado para Android, una solución de ejecución x86 de 32 bits sobre ARM64 y una ruta gráfica Direct3D 9 compatible con los controladores del dispositivo. No se da por compatible ninguna combinación hasta compilarla y probarla en móviles reales.
 
@@ -47,6 +53,6 @@ Cada push a `main` ejecuta GitHub Actions. El APK se publica como artefacto desc
 
 1. Confirmar la detección de la instalación con una carpeta real del usuario.
 2. Diseñar y probar la capa de entrada táctil.
-3. Evaluar runtimes y traductores ARM64/x86 con soporte Android real.
+3. Validar una aplicación Windows x86 de 32 bits en ARM64 con una base de runtime Android existente.
 4. Integrar y validar una ruta Direct3D 9.
 5. Probar estabilidad y rendimiento en distintos dispositivos.

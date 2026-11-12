@@ -131,8 +131,7 @@ class MainActivity : Activity() {
         } else {
             "No se puede iniciar FIFA 13 todavía: falta instalar un runtime Wine/Hangover compatible en el almacenamiento privado de la app."
         })
-        actionButton("ABRIR WINLATOR") { openWinlator() }
-        note("Puente externo experimental: abre Winlator si está instalado. La creación del contenedor y la selección de fifa13.exe se hacen dentro de Winlator; esta app todavía no puede enviarle el juego automáticamente.")
+        note("El motor debe estar integrado dentro de esta aplicación. No se abrirá otra app: hasta que se incorporen y validen Wine, el traductor x86 y Direct3D 9, FIFA 13 seguirá bloqueado.")
 
         val playButton = Button(this).apply {
             text = "JUGAR A FIFA 13"
@@ -141,19 +140,6 @@ class MainActivity : Activity() {
         root.addView(playButton)
         note("El botón permanecerá desactivado hasta integrar y probar todos los componentes de ejecución. No basta con detectar fifa13.exe.")
         setContentView(scroll)
-    }
-
-    private fun openWinlator() {
-        val intent = packageManager.getLaunchIntentForPackage("com.winlator")
-        if (intent == null) {
-            Toast.makeText(this, "Winlator no está instalado. Instala una versión compatible y vuelve aquí.", Toast.LENGTH_LONG).show()
-            return
-        }
-        try {
-            startActivity(intent)
-        } catch (_: Exception) {
-            Toast.makeText(this, "No se pudo abrir Winlator.", Toast.LENGTH_LONG).show()
-        }
     }
 
     private fun deviceCompatibilitySummary(): String {

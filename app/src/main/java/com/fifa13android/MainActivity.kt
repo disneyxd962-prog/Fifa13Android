@@ -123,8 +123,20 @@ class MainActivity : Activity() {
         }
         root.addView(pad)
 
-        heading("Estado del motor")
-        note("Wine/Hangover: pendiente de integración\nTraducción x86 → ARM64: pendiente\nDirect3D 9: pendiente\nEl juego todavía no se puede ejecutar desde esta versión.")
+        heading("Diagnóstico del runtime")
+        val runtime = RuntimeProbe.inspect(this)
+        note(runtime.summary())
+        note(if (runtime.readyForFurtherValidation) {
+            "Se han encontrado los archivos básicos del runtime. Aún hay que validar la traducción x86 de 32 bits, Direct3D 9, audio, entrada y arranque real del juego."
+        } else {
+            "No se puede iniciar FIFA 13 todavía: falta instalar un runtime Wine/Hangover compatible en el almacenamiento privado de la app."
+        })
+        val playButton = Button(this).apply {
+            text = "JUGAR A FIFA 13"
+            isEnabled = false
+        }
+        root.addView(playButton)
+        note("El botón permanecerá desactivado hasta integrar y probar todos los componentes de ejecución. No basta con detectar fifa13.exe.")
         setContentView(scroll)
     }
 
